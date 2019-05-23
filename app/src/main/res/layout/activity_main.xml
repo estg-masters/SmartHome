@@ -1,33 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activity.MainActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <include
+        layout="@layout/toolbar"
+        android:background="#BF6F1C" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="600dp"
+        android:layout_height="258dp"
+        android:layout_gravity="center"
+        android:contentDescription="@string/houseimage"
+        app:srcCompat="@drawable/casa"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-208dp" />
+
+    <TextView
+        android:id="@+id/TitleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="98dp"
+        android:gravity="center"
+        android:lineSpacingExtra="8sp"
+        android:text="SmartHome"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#BE1E2143"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:typeface="monospace"
+        app:fontFamily="@font/allerta_stencil"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        tools:layout_editor_absoluteX="31dp"
+        tools:layout_editor_absoluteY="238dp" />
+
+    <View
+        android:layout_width="250dp"
+        android:layout_height="7dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="11dp"
+        android:background="#827187" />
+
+    <Button
+        android:id="@+id/go_to_houses_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="50dp"
+        android:background="#65DA8D46"
+        android:onClick="goToHousesView"
+        android:text="@string/houses" />
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/content_main" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/go_to_notifications_button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="50dp"
+        android:background="#65DA8D46"
+        android:text="@string/notifications" />
+</LinearLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+

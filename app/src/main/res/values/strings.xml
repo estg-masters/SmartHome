@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">SmartHome</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="houseimage">HouseImage</string>
+    <string name="button">Button</string>
+    <string name="add_house">Add House</string>
+    <string name="houses">Houses</string>
+    <string name="notifications">notifications</string>
+    <string name="title_activity_houses">HousesActivity</string>
 </resources>
