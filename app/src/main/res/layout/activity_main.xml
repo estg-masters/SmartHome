@@ -28,7 +28,7 @@
         android:layout_height="98dp"
         android:gravity="center"
         android:lineSpacingExtra="8sp"
-        android:text="SmartHome"
+        android:text="@string/smarthome"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="#BE1E2143"
         android:textSize="36sp"

@@ -7,4 +7,5 @@
     <string name="houses">Houses</string>
     <string name="notifications">notifications</string>
     <string name="title_activity_houses">HousesActivity</string>
+    <string name="smarthome">SmartHome</string>
 </resources>
