@@ -27,7 +27,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.ArrayList;
 
-public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+public class LoginActivity extends AppCompatActivity
+        implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient googleApiClient;
@@ -80,7 +81,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             firebaseAuthWithGoogle(account);
-            UserRepository.getInstance().addUser(
+            UserRepository.getInstance().add(
+                    account.getId(),
                     User.Builder
                             .aUser()
                             .withId(account.getId())
@@ -88,6 +90,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             .withTokens(new ArrayList<>())
                             .build()
             );
+        } else {
+            Log.d("GoogleSingInFailed", result.getStatus().toString());
         }
     }
 

@@ -3,7 +3,7 @@ package com.estg.masters.pedwm.smarthome.repository;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AbstractRepository<T> {
+public abstract class AbstractRepository<T> {
     private Map<String, T> repository;
 
     public AbstractRepository() {
