@@ -3,17 +3,18 @@ package com.estg.masters.pedwm.smarthome.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class House {
-    private String id;
+public class House implements JsonModel{
+    private String key;
     private String name;
     private String adminId;
 
-    public String getId() {
-        return id;
+    @Override
+    public String getKey() {
+        return key;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getName() {
@@ -32,16 +33,17 @@ public class House {
         this.adminId = adminId;
     }
 
-    public JSONObject toJson() throws JSONException {
+    @Override
+    public JSONObject toJsonObject() throws JSONException {
         return new JSONObject()
-                .put("id", id)
+                .put("key", key)
                 .put("name", name)
                 .put("adminId", adminId);
     }
 
     public static House fromJson(JSONObject jsonObject) throws JSONException {
         return Builder.aHouse()
-                .withId(jsonObject.getString("id"))
+                .withId(jsonObject.getString("key"))
                 .withName(jsonObject.getString("name"))
                 .withAdminId(jsonObject.getString("adminId"))
                 .build();
@@ -59,17 +61,17 @@ public class House {
         }
 
         public Builder withId(String id) {
-            this.house.setId(id);
+            this.house.setKey(id);
             return this;
         }
 
         public Builder withName(String name) {
-            this.house.setId(name);
+            this.house.setKey(name);
             return this;
         }
 
         public Builder withAdminId(String adminId) {
-            this.house.setId(adminId);
+            this.house.setKey(adminId);
             return this;
         }
 

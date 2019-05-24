@@ -21,6 +21,7 @@
         app:srcCompat="@drawable/casa2" />
 
     <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="275dp"
         android:layout_height="222dp"
         android:layout_marginStart="68dp"
@@ -42,4 +43,25 @@
             android:layout_gravity="center|center_vertical" />
 
     </FrameLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="98dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:id="@+id/TitleTextView"
+        android:lineSpacingExtra="8sp"
+        android:text="@string/smarthome"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#BE1E2143"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:typeface="monospace"
+        app:fontFamily="@font/allerta_stencil"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+        tools:layout_editor_absoluteX="16dp" />
 </android.support.constraint.ConstraintLayout>

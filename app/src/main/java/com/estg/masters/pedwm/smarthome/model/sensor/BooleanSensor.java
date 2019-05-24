@@ -16,7 +16,7 @@ public class BooleanSensor extends AbstractSensor {
     }
 
     @Override
-    public JSONObject toJson() throws JSONException {
+    public JSONObject toJsonObject() throws JSONException {
         return super.toJsonObject().put("value", value);
     }
 

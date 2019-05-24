@@ -1,23 +1,25 @@
 package com.estg.masters.pedwm.smarthome.model.notification;
 
+import com.estg.masters.pedwm.smarthome.model.JsonModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class AbstractNotification {
-    private String id;
+public abstract class AbstractNotification implements JsonModel {
+    private String key;
     private NotificationType type;
     private String userId;
     private String sensorId;
 
-    public AbstractNotification(String id, NotificationType type, String userId, String sensorId) {
-        this.id = id;
+    public AbstractNotification(String key, NotificationType type, String userId, String sensorId) {
+        this.key = key;
         this.type = type;
         this.userId = userId;
         this.sensorId = sensorId;
     }
 
-    public String getId() {
-        return id;
+    public String getKey() {
+        return key;
     }
 
     public NotificationType getType() {
@@ -32,15 +34,13 @@ public abstract class AbstractNotification {
         return sensorId;
     }
 
-    JSONObject toJsonObject() throws JSONException {
+    public JSONObject toJsonObject() throws JSONException {
         return new JSONObject()
-                .put("id", getId())
+                .put("key", getKey())
                 .put("type", getType().toString())
                 .put("userId", getUserId())
                 .put("sensorId", getSensorId());
     }
-
-    public abstract JSONObject toJson() throws JSONException;
 
     static class Builder {
         String id;

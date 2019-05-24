@@ -7,13 +7,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
-    private String id;
+public class User implements JsonModel{
+    private String key;
     private String name;
     private List<String> tokens;
 
-    public String getId() {
-        return id;
+    public String getKey() {
+        return key;
     }
 
     public String getName() {
@@ -24,8 +24,8 @@ public class User {
         return tokens;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public void setName(String name) {
@@ -39,15 +39,16 @@ public class User {
     public static User fromJson(JSONObject userJson) throws JSONException {
         return Builder
                 .aUser()
-                .withId(userJson.getString("id"))
+                .withId(userJson.getString("key"))
                 .withName(userJson.getString("name"))
                 .withTokens(fromJsonArray(userJson.getJSONArray("tokens")))
                 .build();
     }
 
-    public JSONObject toJson() throws JSONException {
+    @Override
+    public JSONObject toJsonObject() throws JSONException {
         return new JSONObject()
-                .put("id", id)
+                .put("key", key)
                 .put("name", name)
                 .put("tokens", tokens);
     }
@@ -72,7 +73,7 @@ public class User {
         }
 
         public Builder withId(String id) {
-            this.user.setId(id);
+            this.user.setKey(id);
             return this;
         }
 

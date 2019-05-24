@@ -2,8 +2,6 @@ package com.estg.masters.pedwm.smarthome.repository;
 
 import com.estg.masters.pedwm.smarthome.model.House;
 
-import java.util.HashMap;
-
 public class HouseRepository extends AbstractRepository<House> {
 
     private static HouseRepository INSTANCE;

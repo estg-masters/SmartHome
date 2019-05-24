@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void onClick(View v) {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+        goToActivity(MainActivity.class);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 

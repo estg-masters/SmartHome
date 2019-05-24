@@ -1,9 +1,11 @@
 package com.estg.masters.pedwm.smarthome.repository;
 
+import com.estg.masters.pedwm.smarthome.model.JsonModel;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractRepository<T> {
+public abstract class AbstractRepository<T extends JsonModel> {
     private Map<String, T> repository;
 
     public AbstractRepository() {

@@ -23,7 +23,7 @@ public class NumberAbstractNotification extends AbstractNotification {
     }
 
     @Override
-    public JSONObject toJson() throws JSONException {
+    public JSONObject toJsonObject() throws JSONException {
         return super.toJsonObject()
                 .put("value", getNumber())
                 .put("comparator", getComparingType().toString());

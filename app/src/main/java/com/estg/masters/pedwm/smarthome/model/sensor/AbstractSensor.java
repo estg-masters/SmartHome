@@ -1,21 +1,23 @@
 package com.estg.masters.pedwm.smarthome.model.sensor;
 
+import com.estg.masters.pedwm.smarthome.model.JsonModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class AbstractSensor {
-    private String id;
+public abstract class AbstractSensor implements JsonModel {
+    private String key;
     private String name;
     private String houseId;
 
-    public AbstractSensor(String id, String name, String houseId) {
-        this.id = id;
+    public AbstractSensor(String key, String name, String houseId) {
+        this.key = key;
         this.name = name;
         this.houseId = houseId;
     }
 
-    public String getId() {
-        return id;
+    public String getKey() {
+        return key;
     }
 
     public String getName() {
@@ -26,14 +28,13 @@ public abstract class AbstractSensor {
         return houseId;
     }
 
-    JSONObject toJsonObject() throws JSONException {
+    @Override
+    public JSONObject toJsonObject() throws JSONException {
         return new JSONObject()
-                .put("id", id)
+                .put("key", key)
                 .put("name", name)
                 .put("houseId", houseId);
     }
-
-    public abstract JSONObject toJson() throws JSONException ;
 
     static class Builder {
         String id;

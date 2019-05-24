@@ -20,8 +20,9 @@ public class NumberSensor extends AbstractSensor{
     }
 
     @Override
-    public JSONObject toJson() throws JSONException {
-        return null;
+    public JSONObject toJsonObject() throws JSONException {
+        return super.toJsonObject()
+                .put("value", this.value);
     }
 
     public static class Builder extends AbstractSensor.Builder {
