@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.estg.masters.pedwm.smarthome.R;
+import com.estg.masters.pedwm.smarthome.model.User;
+import com.estg.masters.pedwm.smarthome.repository.UserRepository;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -22,6 +24,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
@@ -73,9 +77,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        // Todo: add user if don't exist
         if (result.isSuccess()) {
-            firebaseAuthWithGoogle(result.getSignInAccount());
+            GoogleSignInAccount account = result.getSignInAccount();
+            firebaseAuthWithGoogle(account);
+            UserRepository.getInstance().addUser(
+                    User.Builder
+                            .aUser()
+                            .withId(account.getId())
+                            .withName(account.getDisplayName())
+                            .withTokens(new ArrayList<>())
+                            .build()
+            );
         }
     }
 
@@ -83,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         goToActivity(MainActivity.class);
                     } else {
                         Log.d("Error", "Auth failed!");

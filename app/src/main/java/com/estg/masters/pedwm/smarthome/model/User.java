@@ -60,7 +60,7 @@ public class User {
         return tokens;
     }
 
-    static class Builder {
+    public static class Builder {
         private User user;
 
         public static Builder aUser() {

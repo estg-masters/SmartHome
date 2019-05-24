@@ -20,7 +20,7 @@ public class BooleanSensor extends AbstractSensor {
         return super.toJsonObject().put("value", value);
     }
 
-    static class Builder extends AbstractSensor.Builder {
+    public static class Builder extends AbstractSensor.Builder {
         private boolean value;
 
         public Builder withValue(boolean value) {

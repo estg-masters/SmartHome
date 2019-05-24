@@ -10,7 +10,7 @@
 
     <include
         layout="@layout/toolbar"
-        android:background="#BF6F1C" />
+        android:background="#C7BECB" />
 
     <ImageView
         android:id="@+id/imageView2"
