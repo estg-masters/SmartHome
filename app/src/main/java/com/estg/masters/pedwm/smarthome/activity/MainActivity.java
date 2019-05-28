@@ -1,19 +1,31 @@
 package com.estg.masters.pedwm.smarthome.activity;
 
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.estg.masters.pedwm.smarthome.R;
+import com.estg.masters.pedwm.smarthome.ui.IntentNavigationUtils;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Objects;
+import java.util.Collections;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private FirebaseAuth mAuth;
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +33,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        getSupportActionBar().setTitle("Smart houses");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        GoogleSignInOptions googleSignInOptions =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestEmail()
+                        .build();
+
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
+                .build();
     }
 
     @Override
@@ -28,16 +52,53 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 //        if (currentUser == null) {
-//            goToActivity(LoginActivity.class);
+//            goToActivityAndFinish(LoginActivity.class);
 //        }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void goToHousesView(View view) {
         goToActivity(HousesActivity.class);
     }
 
-    public void goToActivity(Class activityToGo) {
+    public void goToActivityAndFinish(Class activityToGo) {
         Intent intent = new Intent(MainActivity.this, activityToGo);
         startActivity(intent);
+        finish();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void goToActivity(Class activityToGo) {
+        IntentNavigationUtils.goToActivity(MainActivity.this, activityToGo, Collections.emptyMap());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.my_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.log_out) {
+            logOut();
+        }
+        return true;
+    }
+
+    private void logOut() {
+        try {
+            mAuth.signOut();
+            Auth.GoogleSignInApi.signOut(googleApiClient);
+            Log.d("LogOut", "Logged out");
+        } finally {
+            goToActivityAndFinish(LoginActivity.class);
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

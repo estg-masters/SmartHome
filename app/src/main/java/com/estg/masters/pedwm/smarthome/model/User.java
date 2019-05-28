@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class User implements JsonModel{
     private String key;
@@ -74,6 +75,11 @@ public class User implements JsonModel{
 
         public Builder withId(String id) {
             this.user.setKey(id);
+            return this;
+        }
+
+        public Builder withNewId() {
+            this.user.setKey(UUID.randomUUID().toString());
             return this;
         }
 

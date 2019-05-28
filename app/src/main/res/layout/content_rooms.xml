@@ -5,14 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".activity.HousesActivity"
-    tools:showIn="@layout/activity_houses">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/houses_recycler_view"
-        android:orientation="vertical">
-    </LinearLayout>
-
+    tools:context=".activity.RoomsActivity"
+    tools:showIn="@layout/activity_rooms">
 
 </android.support.constraint.ConstraintLayout>

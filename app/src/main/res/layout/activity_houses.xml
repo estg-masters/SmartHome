@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".activity.HousesActivity">
 
-    <include layout="@layout/toolbar" />
-
     <include layout="@layout/content_houses" />
 
     <android.support.design.widget.FloatingActionButton

@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "619709432191-tbceiep8618nq77anaffnutthk0thtdo.apps.googleusercontent.com",
+          "client_id": "619709432191-o3b537lkkmh1ih9dkv43ul7oki6lnh1s.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.estg.masters.pedwm.smarthome",
-            "certificate_hash": "1f0fc80b00bedd17ffcd88d159fdb94eb80e61ea"
+            "certificate_hash": "4f854497151d4967069380858abacf554f294a30"
           }
         },
         {

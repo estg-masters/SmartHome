@@ -5,6 +5,8 @@ import com.estg.masters.pedwm.smarthome.model.JsonModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.UUID;
+
 public abstract class AbstractNotification implements JsonModel {
     private String key;
     private NotificationType type;
@@ -54,6 +56,11 @@ public abstract class AbstractNotification implements JsonModel {
 
         public Builder withId(String id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder withNewId() {
+            this.id = UUID.randomUUID().toString();
             return this;
         }
 

@@ -8,4 +8,21 @@
     <string name="notifications">notifications</string>
     <string name="title_activity_houses">HousesActivity</string>
     <string name="smarthome">SmartHome</string>
+    <string name="log_out">Log Out</string>
+    <string name="title_activity_email_password_login">Sign in</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="login_or_sign_in">Login or sign in</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="rooms">Rooms</string>
+    <string name="house_name">House Name</string>
+    <string name="title_activity_sensors">SensorsActivity</string>
+    <string name="title_activity_rooms">RoomsActivity</string>
 </resources>

@@ -2,6 +2,7 @@ package com.estg.masters.pedwm.smarthome.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.UUID;
 
 public class House implements JsonModel{
     private String key;
@@ -49,7 +50,7 @@ public class House implements JsonModel{
                 .build();
     }
 
-    static class Builder {
+    public static class Builder {
         private House house;
 
         public static Builder aHouse() {
@@ -65,13 +66,18 @@ public class House implements JsonModel{
             return this;
         }
 
+        public Builder withNewId() {
+            this.house.setKey(UUID.randomUUID().toString());
+            return this;
+        }
+
         public Builder withName(String name) {
-            this.house.setKey(name);
+            this.house.setName(name);
             return this;
         }
 
         public Builder withAdminId(String adminId) {
-            this.house.setKey(adminId);
+            this.house.setAdminId(adminId);
             return this;
         }
 

@@ -6,8 +6,8 @@ import org.json.JSONObject;
 public class NumberSensor extends AbstractSensor{
     private float value;
 
-    public NumberSensor(String id, String name, String houseId, float value) {
-        super(id, name, houseId);
+    public NumberSensor(String id, String name, String houseId, float value, String sourceId) {
+        super(id, name, houseId, sourceId);
         this.value = value;
     }
 
@@ -34,7 +34,7 @@ public class NumberSensor extends AbstractSensor{
         }
 
         public NumberSensor build() {
-            return new NumberSensor(id, name, houseId, value);
+            return new NumberSensor(id, name, houseId, value, sourceId);
         }
     }
 }
