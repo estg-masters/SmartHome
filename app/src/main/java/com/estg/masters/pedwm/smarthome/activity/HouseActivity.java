@@ -46,7 +46,6 @@ public class HouseActivity extends AppCompatActivity {
     public void goToActivity(Class activityToGo) {
         Map<String, String> extras = new HashMap<>();
         extras.put("sourceId", house.getKey());
-        extras.put("sourceType", house.getKey());
         IntentNavigationUtils.goToActivity(HouseActivity.this, activityToGo, extras);
     }
 }

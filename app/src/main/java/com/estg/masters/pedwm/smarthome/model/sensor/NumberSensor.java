@@ -3,11 +3,11 @@ package com.estg.masters.pedwm.smarthome.model.sensor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class NumberSensor extends AbstractSensor{
+public class NumberSensor extends BooleanSensor {
     private float value;
 
-    public NumberSensor(String id, String name, String houseId, float value, String sourceId) {
-        super(id, name, houseId, sourceId);
+    public NumberSensor(String id, String name, String houseId, boolean isOn, String sourceId, float value) {
+        super(id, name, houseId, isOn, sourceId);
         this.value = value;
     }
 
@@ -25,16 +25,20 @@ public class NumberSensor extends AbstractSensor{
                 .put("value", this.value);
     }
 
-    public static class Builder extends AbstractSensor.Builder {
-        private float value;
+    public static class Builder extends BooleanSensor.Builder {
+        private float number;
 
-        public Builder withValue(float value) {
-            this.value = value;
+        public static Builder aNumberSensor() {
+            return new Builder();
+        }
+
+        public Builder withNumberValue(float value) {
+            this.number = value;
             return this;
         }
 
         public NumberSensor build() {
-            return new NumberSensor(id, name, houseId, value, sourceId);
+            return new NumberSensor(id, name, houseId, value, sourceId, number);
         }
     }
 }

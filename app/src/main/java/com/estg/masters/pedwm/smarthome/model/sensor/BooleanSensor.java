@@ -25,7 +25,7 @@ public class BooleanSensor extends AbstractSensor {
     }
 
     public static class Builder extends AbstractSensor.Builder {
-        private boolean value;
+        boolean value;
 
         public static Builder aSensor() {
             return new Builder();
