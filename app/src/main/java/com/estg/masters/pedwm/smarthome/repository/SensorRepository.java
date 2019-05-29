@@ -25,7 +25,7 @@ public class SensorRepository extends AbstractRepository<AbstractSensor> {
     }
 
     @Override
-    public AbstractSensor add(String key, AbstractSensor object) {
+    public AbstractSensor save(String key, AbstractSensor object) {
         sensorRef.child(key).setValue(object);
         return object;
     }

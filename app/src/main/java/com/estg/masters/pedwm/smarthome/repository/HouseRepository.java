@@ -26,7 +26,7 @@ public class HouseRepository extends AbstractRepository<House> {
     }
 
     @Override
-    public House add(String key, House object) {
+    public House save(String key, House object) {
         houseRef.child(key).setValue(object);
         return object;
     }

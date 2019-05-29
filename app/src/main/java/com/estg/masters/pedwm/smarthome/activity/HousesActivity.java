@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -22,21 +23,24 @@ import com.estg.masters.pedwm.smarthome.repository.HouseRepository;
 import com.estg.masters.pedwm.smarthome.ui.HouseViewFactory;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class HousesActivity extends AppCompatActivity {
 
-    private String m_Text = "";
+    private String inputText = "";
     private FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     private HouseRepository houseRepository = HouseRepository.getInstance();
 
-    private Map<String, Integer> housesInView = new HashMap<>();
+    private LinearLayout housesView;
+
+    private Map<String, View> housesInView = new HashMap<>();
 
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -45,23 +49,34 @@ public class HousesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         initActivity();
 
-        HouseRepository.getHouseRef().addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        dataSnapshot
-                                .getChildren()
-                                .forEach(houseSnapshot -> {
-                                    if (userCanViewHouse(houseSnapshot))
-                                        addHouseToView(houseSnapshot);
-                                });
-                    }
+        HouseRepository.getHouseRef().addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (userCanViewHouse(dataSnapshot))
+                    addHouseToView(dataSnapshot);
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d("Error", "Database onCancelled", databaseError.toException());
-                    }
-                });
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                onChildRemoved(dataSnapshot);
+                onChildAdded(dataSnapshot, s);
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                housesView.removeView(housesInView.get(dataSnapshot.getKey()));
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("Error", "Database onCancelled", databaseError.toException());
+            }
+        });
 
     }
 
@@ -76,21 +91,17 @@ public class HousesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_houses);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = findViewById(R.id.add_house_button);
         fab.setOnClickListener(view -> createHouse());
+        housesView = findViewById(R.id.houses_recycler_view);
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void addHouseToView(House house) {
-        LinearLayout view = findViewById(R.id.houses_recycler_view);
-        if (housesInView.containsKey(house.getKey()))
-            view.removeView(findViewById(
-                    Optional.ofNullable(housesInView.get(house.getKey())).orElse(-1)));
         View houseView = HouseViewFactory.makeView(house, this, this::goToActivity);
-        view.addView(houseView);
-        housesInView.put(house.getKey(), houseView.getId());
+        housesView.addView(houseView);
+        housesInView.put(house.getKey(), houseView);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -106,22 +117,19 @@ public class HousesActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void createHouse() {
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add House");
-
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
-
         builder.setPositiveButton("OK", (dialog, which) -> {
-            m_Text = input.getText().toString();
+            inputText = input.getText().toString();
             House house = House.Builder.aHouse()
                     .withNewId()
-                    .withName(m_Text)
-                    .withAdminId(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .withName(inputText)
+                    .withAdminId(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
                     .build();
-            houseRepository.add(house.getKey(), house);
+            houseRepository.save(house.getKey(), house);
             addHouseToView(house);
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());

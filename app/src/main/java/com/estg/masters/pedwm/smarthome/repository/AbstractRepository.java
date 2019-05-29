@@ -12,7 +12,7 @@ public abstract class AbstractRepository<T extends JsonModel> {
         this.repository = new HashMap<>();
     }
 
-    public T add(String key, T object) {
+    public T save(String key, T object) {
         return this.repository.put(key, object);
     }
 

@@ -186,7 +186,7 @@ public class LoginActivity extends AppCompatActivity
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void handleSignInAccount(GoogleSignInAccount account) {
         firebaseAuthWithGoogle(account);
-        UserRepository.getInstance().add(
+        UserRepository.getInstance().save(
                 account.getId(),
                 User.Builder.aUser()
                         .withId(account.getId())
