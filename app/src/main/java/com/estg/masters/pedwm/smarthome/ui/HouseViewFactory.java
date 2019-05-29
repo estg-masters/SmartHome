@@ -16,7 +16,7 @@ public class HouseViewFactory {
 
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public static View makeView(House house, Context context, Consumer<String> onClickListener) {
+    public static View makeView(House house, Context context, Consumer<House> onClickListener) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -31,7 +31,7 @@ public class HouseViewFactory {
         view.setLayoutParams(params);
         view.setId(View.generateViewId());
         view.addView(textView);
-        view.setOnClickListener(v -> onClickListener.accept(house.getKey()));
+        view.setOnClickListener(v -> onClickListener.accept(house));
         return view;
     }
 }

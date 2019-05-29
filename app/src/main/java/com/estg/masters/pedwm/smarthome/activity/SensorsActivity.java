@@ -11,7 +11,6 @@ import android.text.InputType;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.estg.masters.pedwm.smarthome.R;
 import com.estg.masters.pedwm.smarthome.model.sensor.AbstractSensor;
@@ -44,7 +43,7 @@ public class SensorsActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void addSensor() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Title");
+        builder.setTitle("Add sensor");
 
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);

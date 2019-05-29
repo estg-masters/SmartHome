@@ -20,4 +20,14 @@ public class HouseRepository extends AbstractRepository<House> {
         }
         return INSTANCE;
     }
+
+    public static DatabaseReference getHouseRef() {
+        return houseRef;
+    }
+
+    @Override
+    public House add(String key, House object) {
+        houseRef.child(key).setValue(object);
+        return object;
+    }
 }

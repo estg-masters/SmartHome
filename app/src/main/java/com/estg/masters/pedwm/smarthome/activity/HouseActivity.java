@@ -14,6 +14,7 @@ import com.estg.masters.pedwm.smarthome.repository.HouseRepository;
 import com.estg.masters.pedwm.smarthome.ui.IntentNavigationUtils;
 import com.google.firebase.database.collection.ImmutableSortedMap;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class HouseActivity extends AppCompatActivity {
 
     private static final HouseRepository houseRepo = HouseRepository.getInstance();
 
-    private String houseId;
+    private House house;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -29,10 +30,10 @@ public class HouseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_house);
 
-        houseId = this.getIntent().getStringExtra("houseId");
+        house = (House) this.getIntent().getSerializableExtra("house");
 
         TextView houseName = findViewById(R.id.house_name_text_view);
-        houseName.setText(houseRepo.get(houseId).getName());
+        houseName.setText(house.getName());
 
         Button goToSensors = findViewById(R.id.see_house_sensors_button);
         Button goToRooms = findViewById(R.id.see_house_rooms_button);
@@ -44,8 +45,8 @@ public class HouseActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void goToActivity(Class activityToGo) {
         Map<String, String> extras = new HashMap<>();
-        extras.put("sourceId", houseId);
-        extras.put("sourceType", "house");
+        extras.put("sourceId", house.getKey());
+        extras.put("sourceType", house.getKey());
         IntentNavigationUtils.goToActivity(HouseActivity.this, activityToGo, extras);
     }
 }

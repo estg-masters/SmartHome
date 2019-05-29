@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-//        if (currentUser == null) {
-//            goToActivityAndFinish(LoginActivity.class);
-//        }
+        if (currentUser == null) {
+            goToActivityAndFinish(LoginActivity.class);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)

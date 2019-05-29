@@ -1,13 +1,27 @@
 package com.estg.masters.pedwm.smarthome.model;
 
+import com.google.firebase.database.DataSnapshot;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
-public class House implements JsonModel{
+public class House implements JsonModel, Serializable {
     private String key;
     private String name;
     private String adminId;
+    private List<Room> rooms;
+
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(List<Room> rooms) {
+        this.rooms = rooms;
+    }
 
     @Override
     public String getKey() {
@@ -39,14 +53,15 @@ public class House implements JsonModel{
         return new JSONObject()
                 .put("key", key)
                 .put("name", name)
-                .put("adminId", adminId);
+                .put("adminId", adminId)
+                .put("rooms", rooms);
     }
 
-    public static House fromJson(JSONObject jsonObject) throws JSONException {
+    public static House fromSnapshot(DataSnapshot dataSnapshot) {
         return Builder.aHouse()
-                .withId(jsonObject.getString("key"))
-                .withName(jsonObject.getString("name"))
-                .withAdminId(jsonObject.getString("adminId"))
+                .withId(dataSnapshot.getKey())
+                .withName(String.valueOf(dataSnapshot.child("name").getValue()))
+                .withAdminId(String.valueOf(dataSnapshot.child("admin_id").getValue()))
                 .build();
     }
 
@@ -78,6 +93,11 @@ public class House implements JsonModel{
 
         public Builder withAdminId(String adminId) {
             this.house.setAdminId(adminId);
+            return this;
+        }
+
+        public Builder withRooms(List<Room> rooms) {
+            this.house.setRooms(rooms);
             return this;
         }
 
