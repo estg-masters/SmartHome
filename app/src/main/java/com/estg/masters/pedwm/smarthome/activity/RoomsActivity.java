@@ -26,6 +26,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -129,9 +130,9 @@ public class RoomsActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void goToSensors(Room room) {
-        Map<String, String> extras = new HashMap<>();
-        extras.put("sourceId", room.getKey());
-        IntentNavigationUtils.goToActivity(RoomsActivity.this, SensorsActivity.class, extras);
+        Map<String, Serializable> extras = new HashMap<>();
+        extras.put("source", room);
+        IntentNavigationUtils.goToActivitySerializable(RoomsActivity.this, SensorsActivity.class, extras);
     }
 
 }

@@ -26,8 +26,8 @@ public class SensorConverter {
 
     private static Sensor numberSensorOf(DataSnapshot sensorSnapshot) {
         return NumberSensor.Builder
-                .aNumberSensor()
-                .withNumberValue(Float.valueOf(sensorSnapshot.child("numberValue").getValue().toString()))
+                .aSensor()
+                .withNumberValue(Float.valueOf(sensorSnapshot.child("value").getValue().toString()))
                 .withId(sensorSnapshot.child("key").getValue().toString())
                 .withName(sensorSnapshot.child("name").getValue().toString())
                 .withSourceId(sensorSnapshot.child("sourceId").getValue().toString())
@@ -37,6 +37,6 @@ public class SensorConverter {
     }
 
     private static boolean isNumberSensor(DataSnapshot sensorSnapshot) {
-        return sensorSnapshot.hasChild("number");
+        return sensorSnapshot.hasChild("value");
     }
 }

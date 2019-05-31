@@ -1,5 +1,7 @@
 package com.estg.masters.pedwm.smarthome.activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,14 +12,16 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.text.Layout;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
-import android.widget.ToggleButton;
+import android.widget.TextView;
 
 import com.estg.masters.pedwm.smarthome.R;
 import com.estg.masters.pedwm.smarthome.model.House;
@@ -64,7 +68,7 @@ public class SensorsActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                ((Switch)((LinearLayout) sensorsInView.get(dataSnapshot.getKey()))
+                ((Switch) ((LinearLayout) sensorsInView.get(dataSnapshot.getKey()))
                         .getChildAt(1))
                         .setChecked(Boolean.parseBoolean(dataSnapshot.child("on").getValue().toString()));
             }
@@ -98,7 +102,7 @@ public class SensorsActivity extends AppCompatActivity {
 
     private String getSourceId() {
         Serializable source = getIntent().getSerializableExtra("source");
-        if(source instanceof House) {
+        if (source instanceof House) {
             return ((House) source).getKey();
         } else {
             return ((Room) source).getKey();
@@ -124,27 +128,42 @@ public class SensorsActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add sensor");
 
+        LinearLayout layout = new LinearLayout(this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
+        layout.setLayoutParams(params);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
         final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
+        input.setInputType(SensorViewFactory.sensorValueInputType);
+        input.setHint("Sensor Name");
 
         final EditText inputValue = new EditText(this);
-        inputValue.setInputType(InputType.TYPE_CLASS_NUMBER);
-        inputValue.setActivated(false);
-        inputValue.setText("0");
+        inputValue.setInputType(InputType.TYPE_NULL);
+        inputValue.setHint("Sensor Numeric Value");
 
         final CheckBox isNumeric = new CheckBox(this);
         isNumeric.setText("Has numeric value");
         isNumeric.setChecked(false);
-        isNumeric.setOnClickListener(v -> inputValue.setActivated(!input.isActivated()));
+        isNumeric.setOnClickListener(v ->
+                inputValue.setInputType(((CheckBox) v).isChecked()
+                        ? SensorViewFactory.sensorValueInputType : InputType.TYPE_NULL));
+
+        layout.addView(input);
+        layout.addView(isNumeric);
+        layout.addView(inputValue);
+
+        builder.setView(layout);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             String inputText = input.getText().toString();
-            Float value = Float.valueOf(inputValue.getText().toString());
+            String inputValueString = inputValue.getText().toString();
+            float value = Float.parseFloat(inputValueString.equals("") ? "0" : inputValueString);
             Sensor sensor;
-            if(isNumeric.isActivated()) {
+            if (isNumeric.isChecked()) {
                 sensor = NumberSensor.Builder
-                        .aNumberSensor()
+                        .aSensor()
                         .withNumberValue(value)
                         .withNewId()
                         .withSourceId(getSourceId())
@@ -173,7 +192,7 @@ public class SensorsActivity extends AppCompatActivity {
 
     private String getHouseId() {
         Serializable source = getIntent().getSerializableExtra("source");
-        if(source instanceof House) {
+        if (source instanceof House) {
             return ((House) source).getKey();
         } else {
             return ((Room) source).getHouseId();
@@ -187,9 +206,31 @@ public class SensorsActivity extends AppCompatActivity {
         sensorsInView.put(sensor.getKey(), view);
     }
 
+    public static void hideSoftKeyboard(Activity activity, View view) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private View getSensorView(Sensor sensor) {
-        return SensorViewFactory.makeView(sensor, this, v -> switchSensor(sensor));
+        return SensorViewFactory.makeView(sensor, this, v -> switchSensor(sensor),
+                (v, actionId, event) -> {
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                            actionId == EditorInfo.IME_ACTION_NEXT) {
+                        updateSensorAndView(sensor, v, actionId);
+                        return false;
+                    }
+                    return false;
+                });
+    }
+
+    private void updateSensorAndView(Sensor sensor, TextView v, int actionId) {
+        ((NumberSensor) sensor).setValue(Float.valueOf(v.getText().toString()));
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            v.clearFocus();
+            hideSoftKeyboard(SensorsActivity.this, v);
+        }
+        updateSensor(sensor);
     }
 
     private void switchSensor(Sensor sensor) {

@@ -1,8 +1,9 @@
 package com.estg.masters.pedwm.smarthome.model;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Room {
+public class Room implements Serializable {
     private String key;
     private String name;
     private String houseId;
