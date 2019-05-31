@@ -10,11 +10,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
+import android.widget.ToggleButton;
 
 import com.estg.masters.pedwm.smarthome.R;
 import com.estg.masters.pedwm.smarthome.model.House;
@@ -34,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SensorsActivity extends AppCompatActivity {
-    private String sourceId;
     private Map<String, View> sensorsInView = new HashMap<>();
 
     private final DatabaseReference sensorRef = SensorRepository.getSensorRef();
@@ -52,7 +54,7 @@ public class SensorsActivity extends AppCompatActivity {
     private void getSensors() {
         String sourceId = getSourceId();
         String sourceIdType = getSourceType();
-        sensorRef.orderByChild("sourceId").equalTo(sourceId).addChildEventListener(new ChildEventListener() {
+        sensorRef.orderByChild(sourceIdType).equalTo(sourceId).addChildEventListener(new ChildEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -62,8 +64,9 @@ public class SensorsActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                View newSensorView = getSensorView(SensorConverter.fromSnapshot(dataSnapshot));
-                sensorsLayout.childDrawableStateChanged(newSensorView); //todo: check
+                ((Switch)((LinearLayout) sensorsInView.get(dataSnapshot.getKey()))
+                        .getChildAt(1))
+                        .setChecked(Boolean.parseBoolean(dataSnapshot.child("on").getValue().toString()));
             }
 
             @Override
@@ -108,7 +111,7 @@ public class SensorsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        this.sourceId = getIntent().getStringExtra("sourceId");
+        String sourceId = getIntent().getStringExtra("sourceId");
 
         sensorsLayout = findViewById(R.id.sensors_layout);
 
@@ -144,8 +147,8 @@ public class SensorsActivity extends AppCompatActivity {
                         .aNumberSensor()
                         .withNumberValue(value)
                         .withNewId()
-                        .withSourceId(sourceId) // todo: support for rooms
-                        .withHouseId(sourceId)
+                        .withSourceId(getSourceId())
+                        .withHouseId(getHouseId())
                         .withName(inputText)
                         .withValue(false)
                         .build();
@@ -153,8 +156,8 @@ public class SensorsActivity extends AppCompatActivity {
                 sensor = Sensor.Builder
                         .aSensor()
                         .withNewId()
-                        .withSourceId(sourceId) // todo: support for rooms
-                        .withHouseId(sourceId)
+                        .withSourceId(getSourceId())
+                        .withHouseId(getHouseId())
                         .withName(inputText)
                         .withValue(false)
                         .build();
@@ -166,6 +169,15 @@ public class SensorsActivity extends AppCompatActivity {
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
+    }
+
+    private String getHouseId() {
+        Serializable source = getIntent().getSerializableExtra("source");
+        if(source instanceof House) {
+            return ((House) source).getKey();
+        } else {
+            return ((Room) source).getHouseId();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
