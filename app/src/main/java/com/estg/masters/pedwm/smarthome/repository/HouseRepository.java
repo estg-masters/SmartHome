@@ -11,7 +11,7 @@ public class HouseRepository extends AbstractRepository<House> {
             .getReference("houses");
 
     private HouseRepository() {
-        super();
+        super(houseRef);
     }
 
     public static HouseRepository getInstance() {
@@ -23,11 +23,5 @@ public class HouseRepository extends AbstractRepository<House> {
 
     public static DatabaseReference getHouseRef() {
         return houseRef;
-    }
-
-    @Override
-    public House save(String key, House object) {
-        houseRef.child(key).setValue(object);
-        return object;
     }
 }

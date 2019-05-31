@@ -1,14 +1,15 @@
 package com.estg.masters.pedwm.smarthome.model.sensor;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-public class NumberSensor extends BooleanSensor {
+public class NumberSensor extends Sensor {
     private float value;
 
     public NumberSensor(String id, String name, String houseId, boolean isOn, String sourceId, float value) {
-        super(id, name, houseId, isOn, sourceId);
+        super(id, name, houseId, sourceId, isOn);
         this.value = value;
+    }
+
+    public NumberSensor() {
+        super();
     }
 
     public float getValue() {
@@ -19,26 +20,25 @@ public class NumberSensor extends BooleanSensor {
         this.value = value;
     }
 
-    @Override
-    public JSONObject toJsonObject() throws JSONException {
-        return super.toJsonObject()
-                .put("value", this.value);
-    }
 
-    public static class Builder extends BooleanSensor.Builder {
-        private float number;
+    public static class Builder extends Sensor.Builder {
+        private NumberSensor sensorUnderConstruction;
+
+        public Builder() {
+            this.sensorUnderConstruction = new NumberSensor();
+        }
 
         public static Builder aNumberSensor() {
             return new Builder();
         }
 
         public Builder withNumberValue(float value) {
-            this.number = value;
+            sensorUnderConstruction.setValue(value);
             return this;
         }
 
         public NumberSensor build() {
-            return new NumberSensor(id, name, houseId, value, sourceId, number);
+            return sensorUnderConstruction;
         }
     }
 }

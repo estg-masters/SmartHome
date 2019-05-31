@@ -38,14 +38,28 @@ public class HouseActivity extends AppCompatActivity {
         Button goToSensors = findViewById(R.id.see_house_sensors_button);
         Button goToRooms = findViewById(R.id.see_house_rooms_button);
 
-        goToSensors.setOnClickListener(v -> goToActivity(SensorsActivity.class));
-        goToRooms.setOnClickListener(v -> goToActivity(RoomsActivity.class));
+        goToSensors.setOnClickListener(v -> goToSensors());
+        goToRooms.setOnClickListener(v -> goToRooms());
+    }
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void goToActivity(Class activityToGo, Map<String, Serializable> extras) {
+        IntentNavigationUtils.goToActivitySerializable(HouseActivity.this, activityToGo, extras);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void goToActivity(Class activityToGo) {
-        Map<String, String> extras = new HashMap<>();
-        extras.put("sourceId", house.getKey());
-        IntentNavigationUtils.goToActivity(HouseActivity.this, activityToGo, extras);
+    public void goToSensors() {
+        Map<String, Serializable> extras = new HashMap<>();
+        extras.put("source", house);
+        goToActivity(SensorsActivity.class, extras);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void goToRooms() {
+        Map<String, Serializable> extras = new HashMap<>();
+        extras.put("source", house);
+        goToActivity(RoomsActivity.class, extras);
     }
 }

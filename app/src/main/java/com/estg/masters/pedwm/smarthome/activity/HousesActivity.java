@@ -99,7 +99,7 @@ public class HousesActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void addHouseToView(House house) {
-        View houseView = HouseViewFactory.makeView(house, this, this::goToActivity);
+        View houseView = HouseViewFactory.makeView(house, this, v -> goToActivity(house));
         housesView.addView(houseView);
         housesInView.put(house.getKey(), houseView);
     }

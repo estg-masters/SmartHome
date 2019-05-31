@@ -12,12 +12,15 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.estg.masters.pedwm.smarthome.R;
-import com.estg.masters.pedwm.smarthome.model.sensor.AbstractSensor;
-import com.estg.masters.pedwm.smarthome.model.sensor.BooleanSensor;
+import com.estg.masters.pedwm.smarthome.model.House;
+import com.estg.masters.pedwm.smarthome.model.Room;
+import com.estg.masters.pedwm.smarthome.model.sensor.NumberSensor;
+import com.estg.masters.pedwm.smarthome.model.sensor.Sensor;
 import com.estg.masters.pedwm.smarthome.model.sensor.SensorConverter;
 import com.estg.masters.pedwm.smarthome.repository.SensorRepository;
 import com.estg.masters.pedwm.smarthome.ui.SensorViewFactory;
@@ -26,6 +29,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +39,7 @@ public class SensorsActivity extends AppCompatActivity {
 
     private final DatabaseReference sensorRef = SensorRepository.getSensorRef();
 
-    private LinearLayout sensors_layout;
+    private LinearLayout sensorsLayout;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -47,6 +51,7 @@ public class SensorsActivity extends AppCompatActivity {
 
     private void getSensors() {
         String sourceId = getSourceId();
+        String sourceIdType = getSourceType();
         sensorRef.orderByChild("sourceId").equalTo(sourceId).addChildEventListener(new ChildEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -57,12 +62,13 @@ public class SensorsActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                updateSensor((BooleanSensor) SensorConverter.fromSnapshot(dataSnapshot));
+                View newSensorView = getSensorView(SensorConverter.fromSnapshot(dataSnapshot));
+                sensorsLayout.childDrawableStateChanged(newSensorView); //todo: check
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                sensors_layout.removeView(sensorsInView.remove(dataSnapshot.getKey()));
+                sensorsLayout.removeView(sensorsInView.remove(dataSnapshot.getKey()));
             }
 
             @Override
@@ -82,8 +88,18 @@ public class SensorsActivity extends AppCompatActivity {
         addSensorToView(SensorConverter.fromSnapshot(sensorSnap));
     }
 
+    private String getSourceType() {
+        return getIntent().getSerializableExtra("source") instanceof House ?
+                "houseId" : "sourceId";
+    }
+
     private String getSourceId() {
-        return getIntent().getStringExtra("sourceId");
+        Serializable source = getIntent().getSerializableExtra("source");
+        if(source instanceof House) {
+            return ((House) source).getKey();
+        } else {
+            return ((Room) source).getKey();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -94,7 +110,7 @@ public class SensorsActivity extends AppCompatActivity {
 
         this.sourceId = getIntent().getStringExtra("sourceId");
 
-        sensors_layout = findViewById(R.id.sensors_layout);
+        sensorsLayout = findViewById(R.id.sensors_layout);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> addSensor());
@@ -109,19 +125,43 @@ public class SensorsActivity extends AppCompatActivity {
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
 
+        final EditText inputValue = new EditText(this);
+        inputValue.setInputType(InputType.TYPE_CLASS_NUMBER);
+        inputValue.setActivated(false);
+        inputValue.setText("0");
+
+        final CheckBox isNumeric = new CheckBox(this);
+        isNumeric.setText("Has numeric value");
+        isNumeric.setChecked(false);
+        isNumeric.setOnClickListener(v -> inputValue.setActivated(!input.isActivated()));
+
         builder.setPositiveButton("OK", (dialog, which) -> {
             String inputText = input.getText().toString();
-            AbstractSensor sensor = BooleanSensor.Builder
-                    .aSensor()
-                    .withNewId()
-                    .withSourceId(sourceId)
-                    .withHouseId(sourceId)
-                    .withName(inputText)
-                    .withValue(false)
-                    .build();
+            Float value = Float.valueOf(inputValue.getText().toString());
+            Sensor sensor;
+            if(isNumeric.isActivated()) {
+                sensor = NumberSensor.Builder
+                        .aNumberSensor()
+                        .withNumberValue(value)
+                        .withNewId()
+                        .withSourceId(sourceId) // todo: support for rooms
+                        .withHouseId(sourceId)
+                        .withName(inputText)
+                        .withValue(false)
+                        .build();
+            } else {
+                sensor = Sensor.Builder
+                        .aSensor()
+                        .withNewId()
+                        .withSourceId(sourceId) // todo: support for rooms
+                        .withHouseId(sourceId)
+                        .withName(inputText)
+                        .withValue(false)
+                        .build();
+            }
+
 
             SensorRepository.getInstance().save(sensor.getKey(), sensor);
-            addSensorToView(sensor);
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
@@ -129,18 +169,23 @@ public class SensorsActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void addSensorToView(AbstractSensor sensor) {
-        View view = SensorViewFactory.makeView(sensor, this, isOn -> switchSensor((BooleanSensor) sensor));
-        sensors_layout.addView(view);
+    private void addSensorToView(Sensor sensor) {
+        View view = getSensorView(sensor);
+        sensorsLayout.addView(view);
         sensorsInView.put(sensor.getKey(), view);
     }
 
-    private void switchSensor(BooleanSensor sensor) {
-        sensor.setValue(!sensor.isOn());
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private View getSensorView(Sensor sensor) {
+        return SensorViewFactory.makeView(sensor, this, v -> switchSensor(sensor));
+    }
+
+    private void switchSensor(Sensor sensor) {
+        sensor.setOn(!sensor.isOn());
         updateSensor(sensor);
     }
 
-    private void updateSensor(BooleanSensor sensor) {
+    private void updateSensor(Sensor sensor) {
         SensorRepository.getInstance().save(sensor.getKey(), sensor);
     }
 }

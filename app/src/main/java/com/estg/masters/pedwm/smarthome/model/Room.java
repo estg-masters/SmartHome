@@ -1,35 +1,18 @@
 package com.estg.masters.pedwm.smarthome.model;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.UUID;
 
-public class Room implements JsonModel {
-    private String id;
+public class Room {
+    private String key;
     private String name;
     private String houseId;
 
-
-    @Override
-    public JSONObject toJsonObject() throws JSONException {
-        return new JSONObject()
-                .put("id", id)
-                .put("name", name)
-                .put("houseId", houseId);
-    }
-
-    @Override
     public String getKey() {
-        return id;
+        return key;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getName() {
@@ -55,17 +38,17 @@ public class Room implements JsonModel {
             room = new Room();
         }
 
-        public Builder aRoom() {
+        public static Builder aRoom() {
             return new Builder();
         }
 
         public Builder withId(String id) {
-            room.setId(id);
+            room.setKey(id);
             return this;
         }
 
         public Builder withNewId() {
-            room.setId(UUID.randomUUID().toString());
+            room.setKey(UUID.randomUUID().toString());
             return this;
         }
 

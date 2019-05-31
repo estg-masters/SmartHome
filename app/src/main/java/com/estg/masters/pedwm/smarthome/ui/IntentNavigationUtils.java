@@ -6,12 +6,21 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 public class IntentNavigationUtils {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void goToActivity(Context from, Class to, Map<String, String> extras) {
+        Intent intent = new Intent(from, to);
+        extras.forEach(intent::putExtra);
+        from.startActivity(intent);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static void goToActivitySerializable(Context from, Class to, Map<String, Serializable> extras) {
         Intent intent = new Intent(from, to);
         extras.forEach(intent::putExtra);
         from.startActivity(intent);

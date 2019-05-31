@@ -4,7 +4,7 @@ import com.google.firebase.database.DataSnapshot;
 
 public class SensorConverter {
 
-    public static AbstractSensor fromSnapshot(DataSnapshot sensorSnapshot) {
+    public static Sensor fromSnapshot(DataSnapshot sensorSnapshot) {
         if(isNumberSensor(sensorSnapshot)) {
             return numberSensorOf(sensorSnapshot);
         } else {
@@ -12,8 +12,8 @@ public class SensorConverter {
         }
     }
 
-    private static AbstractSensor booleanSensorOf(DataSnapshot sensorSnapshot) {
-        return BooleanSensor.Builder
+    private static Sensor booleanSensorOf(DataSnapshot sensorSnapshot) {
+        return Sensor.Builder
                 .aSensor()
                 .withId(sensorSnapshot.child("key").getValue().toString())
                 .withName(sensorSnapshot.child("name").getValue().toString())
@@ -24,7 +24,7 @@ public class SensorConverter {
 
     }
 
-    private static AbstractSensor numberSensorOf(DataSnapshot sensorSnapshot) {
+    private static Sensor numberSensorOf(DataSnapshot sensorSnapshot) {
         return NumberSensor.Builder
                 .aNumberSensor()
                 .withNumberValue(Float.valueOf(sensorSnapshot.child("numberValue").getValue().toString()))
