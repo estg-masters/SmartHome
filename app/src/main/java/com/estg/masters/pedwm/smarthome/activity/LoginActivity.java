@@ -64,6 +64,24 @@ public class LoginActivity extends AppCompatActivity
 
     private void initActivity() {
         setContentView(R.layout.activity_login);
+        GoogleSignInOptions googleSignInOptions = initGoogleSignInApi();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+
+        initViews();
+    }
+
+    private void initViews() {
+        googleSignInButton = findViewById(R.id.google_sign_in_button);
+        normalSignInButton = findViewById(R.id.normal_login_button);
+        emailInput = findViewById(R.id.emailLogin);
+        passwordInput = findViewById(R.id.passwordLogin);
+
+        googleSignInButton.setOnClickListener(this);
+        normalSignInButton.setOnClickListener(this);
+    }
+
+    private GoogleSignInOptions initGoogleSignInApi() {
         GoogleSignInOptions googleSignInOptions =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestIdToken(getString(R.string.default_web_client_id))
@@ -74,17 +92,7 @@ public class LoginActivity extends AppCompatActivity
                 .enableAutoManage(this, this)
                 .addApi(GOOGLE_SIGN_IN_API, googleSignInOptions)
                 .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-
-        googleSignInButton = findViewById(R.id.google_sign_in_button);
-        normalSignInButton = findViewById(R.id.normal_login_button);
-
-        emailInput = findViewById(R.id.emailLogin);
-        passwordInput = findViewById(R.id.passwordLogin);
-
-        googleSignInButton.setOnClickListener(this);
-        normalSignInButton.setOnClickListener(this);
+        return googleSignInOptions;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -101,11 +109,15 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.google_sign_in_button) {
-            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-            startActivityForResult(signInIntent, RC_SIGN_IN);
+            googleLogin();
         } else if (v.getId() == R.id.normal_login_button) {
             firebaseLogin();
         }
+    }
+
+    private void googleLogin() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -132,7 +144,7 @@ public class LoginActivity extends AppCompatActivity
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        getDisplayName(displayName -> {
+                        getDisplayNameFromUser(displayName -> {
                             UserProfileChangeRequest profileUpdates =
                                     new UserProfileChangeRequest.Builder()
                                             .setDisplayName(displayName).build();
@@ -152,7 +164,7 @@ public class LoginActivity extends AppCompatActivity
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void getDisplayName(Consumer<String> displayNameConsumer) {
+    private void getDisplayNameFromUser(Consumer<String> displayNameConsumer) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Choose your display name");
 

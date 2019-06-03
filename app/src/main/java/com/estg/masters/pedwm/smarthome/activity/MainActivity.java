@@ -2,10 +2,10 @@ package com.estg.masters.pedwm.smarthome.activity;
 
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,16 +26,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private FirebaseAuth mAuth;
     private GoogleApiClient googleApiClient;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         setContentView(R.layout.activity_main);
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
-        getSupportActionBar().setTitle("Smart houses");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initActivity();
+    }
 
+    private void initActivity() {
+        initAuth();
+        initActionBar();
+        initGoogleSignInApi();
+    }
+
+    private void initAuth() {
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+    }
+
+    private void initGoogleSignInApi() {
         GoogleSignInOptions googleSignInOptions =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestEmail()
@@ -47,10 +59,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .build();
     }
 
+    private void initActionBar() {
+        getSupportActionBar().setTitle("Smart houses");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        redirectToMainActivityIfUserIsSet();
+    }
+
+    private void redirectToMainActivityIfUserIsSet() {
         if (currentUser == null) {
             goToActivityAndFinish(LoginActivity.class);
         }

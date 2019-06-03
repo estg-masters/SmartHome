@@ -1,5 +1,7 @@
-package com.estg.masters.pedwm.smarthome.model.sensor;
+package com.estg.masters.pedwm.smarthome.model.converters;
 
+import com.estg.masters.pedwm.smarthome.model.sensor.NumberSensor;
+import com.estg.masters.pedwm.smarthome.model.sensor.Sensor;
 import com.google.firebase.database.DataSnapshot;
 
 public class SensorConverter {

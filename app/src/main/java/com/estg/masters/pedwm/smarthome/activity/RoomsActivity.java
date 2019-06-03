@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import com.estg.masters.pedwm.smarthome.R;
 import com.estg.masters.pedwm.smarthome.model.House;
 import com.estg.masters.pedwm.smarthome.model.Room;
+import com.estg.masters.pedwm.smarthome.model.converters.RoomConverter;
 import com.estg.masters.pedwm.smarthome.repository.RoomRepository;
 import com.estg.masters.pedwm.smarthome.ui.IntentNavigationUtils;
 import com.estg.masters.pedwm.smarthome.ui.RoomViewFactory;
@@ -41,8 +42,13 @@ public class RoomsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initActivity();
+        initViews();
+        initEventListenerForRooms();
+    }
+
+    private void initEventListenerForRooms() {
         RoomRepository.getReference(getHouseId()).addChildEventListener(new ChildEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 addRoomToView(dataSnapshot);
@@ -77,7 +83,7 @@ public class RoomsActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void initActivity() {
+    private void initViews() {
         setContentView(R.layout.activity_rooms);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -122,7 +128,6 @@ public class RoomsActivity extends AppCompatActivity {
         roomsLayout.addView(roomView);
         roomsInView.put(room.getKey(), roomView);
     }
-
 
     private String getHouseId() {
         return ((House) getIntent().getSerializableExtra("source")).getKey();

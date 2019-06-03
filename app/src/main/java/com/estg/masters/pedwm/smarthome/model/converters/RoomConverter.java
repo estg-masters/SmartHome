@@ -1,9 +1,9 @@
-package com.estg.masters.pedwm.smarthome.activity;
+package com.estg.masters.pedwm.smarthome.model.converters;
 
 import com.estg.masters.pedwm.smarthome.model.Room;
 import com.google.firebase.database.DataSnapshot;
 
-class RoomConverter {
+public class RoomConverter {
     public static Room fromSnapshot(DataSnapshot dataSnapshot) {
         return Room.Builder
                 .aRoom()

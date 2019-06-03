@@ -43,40 +43,4 @@ public abstract class AbstractNotification implements JsonModel {
                 .put("userId", getUserId())
                 .put("sensorId", getSensorId());
     }
-
-    static class Builder {
-        String id;
-        NotificationType type;
-        String userId;
-        String sensorId;
-
-        public static Builder aNotification() {
-            return new Builder();
-        }
-
-        public Builder withId(String id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder withNewId() {
-            this.id = UUID.randomUUID().toString();
-            return this;
-        }
-
-        public Builder withType(NotificationType type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder withUserId(String userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder withSensorId(String sensorId) {
-            this.sensorId = sensorId;
-            return this;
-        }
-    }
 }

@@ -6,7 +6,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class UserRepository extends AbstractRepository<User> {
 
-    private static final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("user");
+    private static final DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+            .getReference("user");
     private static UserRepository INSTANCE;
 
     private UserRepository() {

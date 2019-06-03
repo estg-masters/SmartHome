@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -28,7 +27,7 @@ import com.estg.masters.pedwm.smarthome.model.House;
 import com.estg.masters.pedwm.smarthome.model.Room;
 import com.estg.masters.pedwm.smarthome.model.sensor.NumberSensor;
 import com.estg.masters.pedwm.smarthome.model.sensor.Sensor;
-import com.estg.masters.pedwm.smarthome.model.sensor.SensorConverter;
+import com.estg.masters.pedwm.smarthome.model.converters.SensorConverter;
 import com.estg.masters.pedwm.smarthome.repository.SensorRepository;
 import com.estg.masters.pedwm.smarthome.ui.SensorViewFactory;
 import com.google.firebase.database.ChildEventListener;
@@ -68,8 +67,7 @@ public class SensorsActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                ((Switch) ((LinearLayout) sensorsInView.get(dataSnapshot.getKey()))
-                        .getChildAt(1))
+                getSwitch(dataSnapshot)
                         .setChecked(Boolean.parseBoolean(dataSnapshot.child("on").getValue().toString()));
             }
 
@@ -88,6 +86,15 @@ public class SensorsActivity extends AppCompatActivity {
                 Log.d("Error", "Database onCancelled", databaseError.toException());
             }
         });
+    }
+
+    private Switch getSwitch(@NonNull DataSnapshot dataSnapshot) {
+        LinearLayout linearLayout = (LinearLayout) sensorsInView.get(dataSnapshot.getKey());
+        for (int i = 0; i < linearLayout.getChildCount(); i++) {
+            if (linearLayout.getChildAt(i) instanceof Switch)
+                return (Switch) linearLayout.getChildAt(i);
+        }
+        return null;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -115,8 +122,6 @@ public class SensorsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        String sourceId = getIntent().getStringExtra("sourceId");
-
         sensorsLayout = findViewById(R.id.sensors_layout);
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -136,7 +141,7 @@ public class SensorsActivity extends AppCompatActivity {
         layout.setOrientation(LinearLayout.VERTICAL);
 
         final EditText input = new EditText(this);
-        input.setInputType(SensorViewFactory.sensorValueInputType);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setHint("Sensor Name");
 
         final EditText inputValue = new EditText(this);
@@ -148,7 +153,7 @@ public class SensorsActivity extends AppCompatActivity {
         isNumeric.setChecked(false);
         isNumeric.setOnClickListener(v ->
                 inputValue.setInputType(((CheckBox) v).isChecked()
-                        ? SensorViewFactory.sensorValueInputType : InputType.TYPE_NULL));
+                        ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL));
 
         layout.addView(input);
         layout.addView(isNumeric);

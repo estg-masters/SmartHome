@@ -4,6 +4,7 @@ import com.estg.masters.pedwm.smarthome.model.Room;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class RoomRepository extends AbstractRepository<Room> {
 
@@ -17,7 +18,7 @@ public class RoomRepository extends AbstractRepository<Room> {
     }
 
     public static RoomRepository getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new RoomRepository();
         }
         return instance;
@@ -47,6 +48,14 @@ public class RoomRepository extends AbstractRepository<Room> {
                 .child("rooms")
                 .child(roomKey)
                 .removeValue();
+    }
+
+    public void getChild(String roomKey, String houseKey, ValueEventListener valueListener) {
+        reference
+                .child(houseKey)
+                .child("rooms")
+                .child(roomKey)
+                .addListenerForSingleValueEvent(valueListener);
     }
 
     @Override

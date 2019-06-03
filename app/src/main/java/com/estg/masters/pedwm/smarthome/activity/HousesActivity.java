@@ -130,7 +130,6 @@ public class HousesActivity extends AppCompatActivity {
                     .withAdminId(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
                     .build();
             houseRepository.save(house.getKey(), house);
-            addHouseToView(house);
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 

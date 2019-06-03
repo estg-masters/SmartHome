@@ -29,7 +29,7 @@ public class NumberAbstractNotification extends AbstractNotification {
                 .put("comparator", getComparingType().toString());
     }
 
-    static class Builder extends AbstractNotification.Builder {
+    static class Builder {
         private float value;
         private ComparingType comparingType;
 
@@ -43,9 +43,9 @@ public class NumberAbstractNotification extends AbstractNotification {
             return this;
         }
 
-        public NumberAbstractNotification build() {
-            return new NumberAbstractNotification(id, type, userId, sensorId, value, comparingType);
-        }
+//        public NumberAbstractNotification build() {
+//            return new NumberAbstractNotification(id, type, userId, sensorId, value, comparingType);
+//        }
     }
 
 }
