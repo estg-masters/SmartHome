@@ -5,12 +5,12 @@ import org.json.JSONObject;
 
 import java.util.UUID;
 
-public class BooleanAbstractNotification extends AbstractNotification {
+public class BooleanNotification extends AbstractNotification {
     private boolean value;
 
-    public BooleanAbstractNotification(String id, String userId, String sensorId,
-                                       boolean value) {
-        super(id, NotificationType.BOOLEAN, userId, sensorId);
+    public BooleanNotification(String id, String userId, String sensorId,
+                               boolean value) {
+        super(id, NotificationTypeEnum.BOOLEAN, userId, sensorId);
         this.value = value;
     }
 
@@ -25,7 +25,7 @@ public class BooleanAbstractNotification extends AbstractNotification {
 
     public static class Builder {
         String id;
-        NotificationType type;
+        NotificationTypeEnum type;
         String userId;
         String sensorId;
         boolean value;
@@ -59,8 +59,8 @@ public class BooleanAbstractNotification extends AbstractNotification {
             return this;
         }
 
-        public BooleanAbstractNotification build(){
-            return new BooleanAbstractNotification(id, userId, sensorId, value);
+        public BooleanNotification build(){
+            return new BooleanNotification(id, userId, sensorId, value);
         }
     }
 }

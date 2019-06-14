@@ -16,7 +16,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.estg.masters.pedwm.smarthome.model.notification.BooleanAbstractNotification;
+import com.estg.masters.pedwm.smarthome.model.notification.BooleanNotification;
 import com.estg.masters.pedwm.smarthome.model.sensor.NumberSensor;
 import com.estg.masters.pedwm.smarthome.model.sensor.Sensor;
 import com.estg.masters.pedwm.smarthome.repository.NotificationRepository;
@@ -125,8 +125,8 @@ public class SensorViewFactory {
             builder.setView(spinner);
             builder.setPositiveButton("OK", (dialog, which) -> {
                 // todo add option for number notification
-                BooleanAbstractNotification notification =
-                        BooleanAbstractNotification.Builder.aNotification()
+                BooleanNotification notification =
+                        BooleanNotification.Builder.aNotification()
                                 .withNewId()
                                 .withUserId(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                 .withSensorId(sensor.getKey())

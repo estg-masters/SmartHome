@@ -5,15 +5,13 @@ import com.estg.masters.pedwm.smarthome.model.JsonModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.UUID;
-
 public abstract class AbstractNotification implements JsonModel {
     private String key;
-    private NotificationType type;
+    private NotificationTypeEnum type;
     private String userId;
     private String sensorId;
 
-    public AbstractNotification(String key, NotificationType type, String userId, String sensorId) {
+    public AbstractNotification(String key, NotificationTypeEnum type, String userId, String sensorId) {
         this.key = key;
         this.type = type;
         this.userId = userId;
@@ -24,7 +22,7 @@ public abstract class AbstractNotification implements JsonModel {
         return key;
     }
 
-    public NotificationType getType() {
+    public NotificationTypeEnum getType() {
         return type;
     }
 
