@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.estg.masters.pedwm.smarthome.R;
 import com.estg.masters.pedwm.smarthome.model.User;
 import com.estg.masters.pedwm.smarthome.repository.UserRepository;
+import com.estg.masters.pedwm.smarthome.services.PreferenceManager;
 import com.estg.masters.pedwm.smarthome.ui.IntentNavigationUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -35,6 +36,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -198,12 +200,13 @@ public class LoginActivity extends AppCompatActivity
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void handleSignInAccount(GoogleSignInAccount account) {
         firebaseAuthWithGoogle(account);
+        List<String> tokens = initializerUserTokens();
         UserRepository.getInstance().save(
                 account.getId(),
                 User.Builder.aUser()
                         .withId(account.getId())
                         .withName(account.getDisplayName())
-                        .withTokens(new ArrayList<>())
+                        .withTokens(tokens)
                         .build()
         );
     }
@@ -225,5 +228,14 @@ public class LoginActivity extends AppCompatActivity
     public void goToActivityAndFinish(Class activityToGo) {
         IntentNavigationUtils.goToActivityAndFinish(LoginActivity.this, activityToGo,
                 Collections.emptyMap());
+    }
+
+    private List<String> initializerUserTokens(){
+        List<String> tokens = new ArrayList<>();
+        PreferenceManager preferenceManager = PreferenceManager.getInstance(getApplicationContext());
+
+        tokens.add(preferenceManager.getValue("FMC"));
+
+        return tokens;
     }
 }
