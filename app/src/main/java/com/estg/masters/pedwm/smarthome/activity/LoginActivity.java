@@ -28,14 +28,18 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -158,6 +162,13 @@ public class LoginActivity extends AppCompatActivity
                                     .ifPresent(firebaseUser ->
                                             firebaseUser.updateProfile(profileUpdates));
 
+                            getCurrentDeviceToken(token -> {
+                                List<String> tokens = new ArrayList<>();
+                                tokens.add(token);
+
+                                saveCurrentUser(tokens);
+                            });
+
                             goToActivityAndFinish(MainActivity.class);
                         });
                     } else {
@@ -166,6 +177,27 @@ public class LoginActivity extends AppCompatActivity
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void saveCurrentUser(List<String> tokens) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        UserRepository.getInstance().save(
+                currentUser.getUid(),
+                User.Builder.aUser()
+                .withId(currentUser.getUid())
+                .withName(currentUser.getDisplayName())
+                .withTokens(tokens).build()
+        );
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void getCurrentDeviceToken(Consumer<String> consumer){
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                consumer.accept(instanceIdResult.getToken());
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
