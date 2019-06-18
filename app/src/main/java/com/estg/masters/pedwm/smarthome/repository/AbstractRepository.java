@@ -1,7 +1,5 @@
 package com.estg.masters.pedwm.smarthome.repository;
 
-import android.util.Log;
-
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 
