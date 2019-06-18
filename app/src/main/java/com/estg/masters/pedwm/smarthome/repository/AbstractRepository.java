@@ -1,5 +1,7 @@
 package com.estg.masters.pedwm.smarthome.repository;
 
+import android.util.Log;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 
@@ -21,5 +23,9 @@ public abstract class AbstractRepository<T> {
 
     public DatabaseReference getByField(String field, String value) {
         return this.databaseReference.orderByChild(field).equalTo(value).getRef();
+    }
+
+    public DatabaseReference getReference() {
+        return databaseReference;
     }
 }

@@ -17,8 +17,8 @@ import android.widget.Toast;
 
 import com.estg.masters.pedwm.smarthome.R;
 import com.estg.masters.pedwm.smarthome.model.User;
+import com.estg.masters.pedwm.smarthome.repository.HouseRepository;
 import com.estg.masters.pedwm.smarthome.repository.UserRepository;
-import com.estg.masters.pedwm.smarthome.services.PreferenceManager;
 import com.estg.masters.pedwm.smarthome.ui.IntentNavigationUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,6 +33,9 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -200,13 +203,12 @@ public class LoginActivity extends AppCompatActivity
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void handleSignInAccount(GoogleSignInAccount account) {
         firebaseAuthWithGoogle(account);
-        List<String> tokens = initializerUserTokens();
         UserRepository.getInstance().save(
                 account.getId(),
                 User.Builder.aUser()
                         .withId(account.getId())
                         .withName(account.getDisplayName())
-                        .withTokens(tokens)
+                        .withTokens(new ArrayList<>())
                         .build()
         );
     }
@@ -228,14 +230,5 @@ public class LoginActivity extends AppCompatActivity
     public void goToActivityAndFinish(Class activityToGo) {
         IntentNavigationUtils.goToActivityAndFinish(LoginActivity.this, activityToGo,
                 Collections.emptyMap());
-    }
-
-    private List<String> initializerUserTokens(){
-        List<String> tokens = new ArrayList<>();
-        PreferenceManager preferenceManager = PreferenceManager.getInstance(getApplicationContext());
-
-        tokens.add(preferenceManager.getValue("FMC"));
-
-        return tokens;
     }
 }
