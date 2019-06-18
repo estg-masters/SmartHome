@@ -37,6 +37,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -44,6 +45,7 @@ import com.google.firebase.iid.InstanceIdResult;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -140,12 +142,44 @@ public class LoginActivity extends AppCompatActivity
                     if (task.isSuccessful()) {
                         // Log in success
                         Log.d("", "createUserWithEmail:success");
+                        addTokenToCurrentUserIfNotExistent();
                         goToActivityAndFinish(MainActivity.class);
                     } else {
                         // If log in fails, try to sign in
                         firebaseSignIn(email, password);
                     }
                 });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void addTokenToCurrentUserIfNotExistent() {
+        final DatabaseReference userTokensReference = UserRepository.getInstance().getReference().child(mAuth.getCurrentUser().getUid()).child("tokens");
+
+        getCurrentDeviceToken(token -> {
+            userTokensReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    List<String> tokens = getUserTokens(dataSnapshot);
+
+                    if (!tokens.contains(token)) {
+                        tokens.add(token);
+                    }
+
+                    userTokensReference.setValue(tokens);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("GET USER ERROR", databaseError.toException().toString());
+                }
+            });
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private List<String> getUserTokens(DataSnapshot snapshot) {
+        return Objects.isNull(snapshot) ? new ArrayList<>() : (List<String>) snapshot.getValue();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -184,14 +218,14 @@ public class LoginActivity extends AppCompatActivity
         UserRepository.getInstance().save(
                 currentUser.getUid(),
                 User.Builder.aUser()
-                .withId(currentUser.getUid())
-                .withName(displayName)
-                .withTokens(tokens).build()
+                        .withId(currentUser.getUid())
+                        .withName(displayName)
+                        .withTokens(tokens).build()
         );
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void getCurrentDeviceToken(Consumer<String> consumer){
+    private void getCurrentDeviceToken(Consumer<String> consumer) {
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
@@ -251,6 +285,7 @@ public class LoginActivity extends AppCompatActivity
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        addTokenToCurrentUserIfNotExistent();
                         goToActivityAndFinish(MainActivity.class);
                     } else {
                         Log.d("Error", "Auth failed!");

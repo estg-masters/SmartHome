@@ -62,7 +62,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private List<String> getUserTokens(DataSnapshot snapshot) {
-        return Objects.isNull(snapshot) ? new ArrayList<String>() : (List<String>) snapshot.getValue();
+        return Objects.isNull(snapshot) ? new ArrayList<>() : (List<String>) snapshot.getValue();
     }
 
 }
