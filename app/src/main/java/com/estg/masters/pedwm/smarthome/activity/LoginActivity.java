@@ -166,7 +166,7 @@ public class LoginActivity extends AppCompatActivity
                                 List<String> tokens = new ArrayList<>();
                                 tokens.add(token);
 
-                                saveCurrentUser(tokens);
+                                saveCurrentUser(displayName, tokens);
                             });
 
                             goToActivityAndFinish(MainActivity.class);
@@ -179,13 +179,13 @@ public class LoginActivity extends AppCompatActivity
                 });
     }
 
-    private void saveCurrentUser(List<String> tokens) {
+    private void saveCurrentUser(String displayName, List<String> tokens) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         UserRepository.getInstance().save(
                 currentUser.getUid(),
                 User.Builder.aUser()
                 .withId(currentUser.getUid())
-                .withName(currentUser.getDisplayName())
+                .withName(displayName)
                 .withTokens(tokens).build()
         );
     }
