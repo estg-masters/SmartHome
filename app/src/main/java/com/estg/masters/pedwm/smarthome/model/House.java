@@ -12,6 +12,10 @@ public class House implements Serializable {
     private String adminId;
     private List<Room> rooms;
 
+    public String getKey(){
+        return  key;
+    }
+
     public List<Room> getRooms() {
         return rooms;
     }
