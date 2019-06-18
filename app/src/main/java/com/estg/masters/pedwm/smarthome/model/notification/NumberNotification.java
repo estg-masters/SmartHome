@@ -1,8 +1,5 @@
 package com.estg.masters.pedwm.smarthome.model.notification;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class NumberNotification extends AbstractNotification {
     private float number;
     private ComparingTypeEnum comparingTypeEnum;
@@ -20,13 +17,6 @@ public class NumberNotification extends AbstractNotification {
 
     public ComparingTypeEnum getComparingTypeEnum() {
         return comparingTypeEnum;
-    }
-
-    @Override
-    public JSONObject toJsonObject() throws JSONException {
-        return super.toJsonObject()
-                .put("value", getNumber())
-                .put("comparator", getComparingTypeEnum().toString());
     }
 
     static class Builder {

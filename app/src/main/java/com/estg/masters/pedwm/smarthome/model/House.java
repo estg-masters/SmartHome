@@ -2,14 +2,11 @@ package com.estg.masters.pedwm.smarthome.model;
 
 import com.google.firebase.database.DataSnapshot;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-public class House implements JsonModel, Serializable {
+public class House implements Serializable {
     private String key;
     private String name;
     private String adminId;
@@ -21,11 +18,6 @@ public class House implements JsonModel, Serializable {
 
     public void setRooms(List<Room> rooms) {
         this.rooms = rooms;
-    }
-
-    @Override
-    public String getKey() {
-        return key;
     }
 
     public void setKey(String key) {
@@ -46,15 +38,6 @@ public class House implements JsonModel, Serializable {
 
     public void setAdminId(String adminId) {
         this.adminId = adminId;
-    }
-
-    @Override
-    public JSONObject toJsonObject() throws JSONException {
-        return new JSONObject()
-                .put("key", key)
-                .put("name", name)
-                .put("adminId", adminId)
-                .put("rooms", rooms);
     }
 
     public static House fromSnapshot(DataSnapshot dataSnapshot) {

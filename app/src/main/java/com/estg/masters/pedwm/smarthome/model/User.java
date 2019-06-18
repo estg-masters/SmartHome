@@ -1,14 +1,10 @@
 package com.estg.masters.pedwm.smarthome.model;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class User implements JsonModel{
+public class User{
     private String key;
     private String name;
     private List<String> tokens;
@@ -35,31 +31,6 @@ public class User implements JsonModel{
 
     public void setTokens(List<String> tokens) {
         this.tokens = tokens;
-    }
-
-    public static User fromJson(JSONObject userJson) throws JSONException {
-        return Builder
-                .aUser()
-                .withId(userJson.getString("key"))
-                .withName(userJson.getString("name"))
-                .withTokens(fromJsonArray(userJson.getJSONArray("tokens")))
-                .build();
-    }
-
-    @Override
-    public JSONObject toJsonObject() throws JSONException {
-        return new JSONObject()
-                .put("key", key)
-                .put("name", name)
-                .put("tokens", tokens);
-    }
-
-    private static List<String> fromJsonArray(JSONArray jsonTokens) throws JSONException {
-        List<String> tokens = new ArrayList<>();
-        for (int i = 0; i < jsonTokens.length(); i++) {
-            tokens.add(jsonTokens.getString(i));
-        }
-        return tokens;
     }
 
     public static class Builder {

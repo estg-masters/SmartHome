@@ -1,8 +1,5 @@
 package com.estg.masters.pedwm.smarthome.model.notification;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.UUID;
 
 public class BooleanNotification extends AbstractNotification {
@@ -16,11 +13,6 @@ public class BooleanNotification extends AbstractNotification {
 
     public boolean getValue() {
         return value;
-    }
-
-    @Override
-    public JSONObject toJsonObject() throws JSONException {
-        return super.toJsonObject().put("value", getValue());
     }
 
     public static class Builder {
