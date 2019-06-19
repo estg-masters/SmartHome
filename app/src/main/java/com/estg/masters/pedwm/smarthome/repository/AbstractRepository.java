@@ -22,4 +22,8 @@ public abstract class AbstractRepository<T> {
     public DatabaseReference getByField(String field, String value) {
         return this.databaseReference.orderByChild(field).equalTo(value).getRef();
     }
+
+    public DatabaseReference getReference() {
+        return databaseReference;
+    }
 }

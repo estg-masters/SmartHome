@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.estg.masters.pedwm.smarthome.R;
 import com.estg.masters.pedwm.smarthome.model.User;
+import com.estg.masters.pedwm.smarthome.repository.HouseRepository;
 import com.estg.masters.pedwm.smarthome.repository.UserRepository;
 import com.estg.masters.pedwm.smarthome.ui.IntentNavigationUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -27,14 +28,24 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -131,12 +142,43 @@ public class LoginActivity extends AppCompatActivity
                     if (task.isSuccessful()) {
                         // Log in success
                         Log.d("", "createUserWithEmail:success");
+                        addTokenToCurrentUserIfNotExistent();
                         goToActivityAndFinish(MainActivity.class);
                     } else {
                         // If log in fails, try to sign in
                         firebaseSignIn(email, password);
                     }
                 });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void addTokenToCurrentUserIfNotExistent() {
+        final DatabaseReference userTokensReference = UserRepository.getInstance().getReference().child(mAuth.getCurrentUser().getUid()).child("tokens");
+
+        getCurrentDeviceToken(token -> {
+            userTokensReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    List<String> tokens = getUserTokens(dataSnapshot);
+                    if (!tokens.contains(token)) {
+                        tokens.add(token);
+                    }
+
+                    userTokensReference.setValue(tokens);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("GET USER ERROR", databaseError.toException().toString());
+                }
+            });
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private List<String> getUserTokens(DataSnapshot snapshot) {
+        return Objects.isNull(snapshot) ? new ArrayList<>() : (List<String>) snapshot.getValue();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -153,6 +195,13 @@ public class LoginActivity extends AppCompatActivity
                                     .ifPresent(firebaseUser ->
                                             firebaseUser.updateProfile(profileUpdates));
 
+                            getCurrentDeviceToken(token -> {
+                                List<String> tokens = new ArrayList<>();
+                                tokens.add(token);
+
+                                saveCurrentUser(displayName, tokens);
+                            });
+
                             goToActivityAndFinish(MainActivity.class);
                         });
                     } else {
@@ -161,6 +210,24 @@ public class LoginActivity extends AppCompatActivity
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void saveCurrentUser(String displayName, List<String> tokens) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        UserRepository.getInstance().save(
+                currentUser.getUid(),
+                User.Builder.aUser()
+                        .withId(currentUser.getUid())
+                        .withName(displayName)
+                        .withTokens(tokens).build()
+        );
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void getCurrentDeviceToken(Consumer<String> consumer) {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( instanceIdResult ->  {
+                consumer.accept(instanceIdResult.getToken());
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -214,6 +281,7 @@ public class LoginActivity extends AppCompatActivity
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        addTokenToCurrentUserIfNotExistent();
                         goToActivityAndFinish(MainActivity.class);
                     } else {
                         Log.d("Error", "Auth failed!");
