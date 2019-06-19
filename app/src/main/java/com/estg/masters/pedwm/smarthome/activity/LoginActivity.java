@@ -161,7 +161,6 @@ public class LoginActivity extends AppCompatActivity
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<String> tokens = getUserTokens(dataSnapshot);
-
                     if (!tokens.contains(token)) {
                         tokens.add(token);
                     }
@@ -226,11 +225,8 @@ public class LoginActivity extends AppCompatActivity
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void getCurrentDeviceToken(Consumer<String> consumer) {
-        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-            @Override
-            public void onSuccess(InstanceIdResult instanceIdResult) {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( instanceIdResult ->  {
                 consumer.accept(instanceIdResult.getToken());
-            }
         });
     }
 
