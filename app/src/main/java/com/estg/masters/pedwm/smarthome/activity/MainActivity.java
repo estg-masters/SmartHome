@@ -81,6 +81,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         goToActivity(HousesActivity.class);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void goToNotificationsView(View view) {
+        goToActivity(NotificationsActivity.class);
+    }
+
     public void goToActivityAndFinish(Class activityToGo) {
         Intent intent = new Intent(MainActivity.this, activityToGo);
         startActivity(intent);
