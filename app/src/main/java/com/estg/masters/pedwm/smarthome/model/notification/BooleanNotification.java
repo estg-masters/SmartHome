@@ -18,11 +18,6 @@ public class BooleanNotification extends AbstractNotification {
         return value;
     }
 
-    @Override
-    public JSONObject toJsonObject() throws JSONException {
-        return super.toJsonObject().put("value", getValue());
-    }
-
     public static class Builder {
         String id;
         NotificationTypeEnum type;
