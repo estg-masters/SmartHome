@@ -1,8 +1,5 @@
 package com.estg.masters.pedwm.smarthome.model.notification;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.UUID;
 
 public class NumberNotification extends AbstractNotification {
@@ -24,12 +21,16 @@ public class NumberNotification extends AbstractNotification {
         return comparingTypeEnum;
     }
 
-    static class Builder {
+    public static class Builder {
         private String id;
         private String sensorId;
         private String userId;
         private float value;
         private ComparingTypeEnum comparingTypeEnum;
+
+        public static Builder aNotification() {
+            return new Builder();
+        }
 
         public Builder withValue(float value) {
             this.value = value;
