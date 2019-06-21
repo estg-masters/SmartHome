@@ -96,6 +96,11 @@ public class Sensor {
             return this;
         }
 
+        public Builder withOn(boolean isOn) {
+            sensorUnderConstruction.setOn(isOn);
+            return this;
+        }
+
         public Builder withSourceId(String sourceId) {
             sensorUnderConstruction.setSourceId(sourceId);
             return this;

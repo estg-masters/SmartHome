@@ -28,6 +28,8 @@ import com.estg.masters.pedwm.smarthome.model.Room;
 import com.estg.masters.pedwm.smarthome.model.sensor.NumberSensor;
 import com.estg.masters.pedwm.smarthome.model.sensor.Sensor;
 import com.estg.masters.pedwm.smarthome.model.converters.SensorConverter;
+import com.estg.masters.pedwm.smarthome.model.sensor.SensorHistorySnapshot;
+import com.estg.masters.pedwm.smarthome.repository.HistoryRepository;
 import com.estg.masters.pedwm.smarthome.repository.SensorRepository;
 import com.estg.masters.pedwm.smarthome.ui.SensorViewFactory;
 import com.google.firebase.database.ChildEventListener;
@@ -38,6 +40,8 @@ import com.google.firebase.database.DatabaseReference;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 public class SensorsActivity extends AppCompatActivity {
     private Map<String, View> sensorsInView = new HashMap<>();
@@ -69,6 +73,8 @@ public class SensorsActivity extends AppCompatActivity {
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 getSwitch(dataSnapshot)
                         .setChecked(Boolean.parseBoolean(dataSnapshot.child("on").getValue().toString()));
+
+                storeChangeInHistory(dataSnapshot);
             }
 
             @Override
@@ -245,5 +251,30 @@ public class SensorsActivity extends AppCompatActivity {
 
     private void updateSensor(Sensor sensor) {
         SensorRepository.getInstance().save(sensor.getKey(), sensor);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void storeChangeInHistory(DataSnapshot sensorSnapshot) {
+        String historySnapshotId = UUID.randomUUID().toString();
+
+        SensorHistorySnapshot sensorHistorySnapshot = Objects.isNull(sensorSnapshot
+                .child("value").getValue()) ?
+                SensorHistorySnapshot.Builder.aSensor()
+                        .withId(sensorSnapshot.child("key").getValue().toString())
+                        .withHouseId(sensorSnapshot.child("houseId").getValue().toString())
+                        .withSourceId(sensorSnapshot.child("sourceId").getValue().toString())
+                        .withOn(sensorSnapshot.child("on").getValue().toString().equals("true"))
+                        .withName(sensorSnapshot.child("name").getValue().toString())
+                        .build() :
+                SensorHistorySnapshot.Builder.aSensor()
+                        .withId(sensorSnapshot.child("key").getValue().toString())
+                        .withHouseId(sensorSnapshot.child("houseId").getValue().toString())
+                        .withSourceId(sensorSnapshot.child("sourceId").getValue().toString())
+                        .withOn(sensorSnapshot.child("on").getValue().toString().equals("true"))
+                        .withName(sensorSnapshot.child("name").getValue().toString())
+                        .withNumberValue(Float.parseFloat(sensorSnapshot.child("value").getValue().toString()))
+                        .build();
+
+        HistoryRepository.getInstance().save(historySnapshotId, sensorHistorySnapshot);
     }
 }
