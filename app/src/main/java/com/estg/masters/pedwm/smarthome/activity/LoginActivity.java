@@ -265,14 +265,6 @@ public class LoginActivity extends AppCompatActivity
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void handleSignInAccount(GoogleSignInAccount account) {
         firebaseAuthWithGoogle(account);
-        UserRepository.getInstance().save(
-                account.getId(),
-                User.Builder.aUser()
-                        .withId(account.getId())
-                        .withName(account.getDisplayName())
-                        .withTokens(new ArrayList<>())
-                        .build()
-        );
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -281,7 +273,26 @@ public class LoginActivity extends AppCompatActivity
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        addTokenToCurrentUserIfNotExistent();
+                        UserRepository.getInstance().getReference()
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(Objects.isNull(dataSnapshot.getValue())) {
+                                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult ->
+                                            saveCurrentUser(account.getDisplayName(),
+                                                    Collections.singletonList(instanceIdResult.getToken())));
+                                } else {
+                                    addTokenToCurrentUserIfNotExistent();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.e("ERROR", "Retreiving the user");
+                            }
+                        });
+
                         goToActivityAndFinish(MainActivity.class);
                     } else {
                         Log.d("Error", "Auth failed!");
