@@ -1,6 +1,6 @@
 package com.estg.masters.pedwm.smarthome.model.notification;
 
-enum ComparingTypeEnum {
+public enum ComparingTypeEnum {
     BIGGER,
     LESSER,
     EQUALS

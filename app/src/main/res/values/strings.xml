@@ -25,4 +25,5 @@
     <string name="house_name">House Name</string>
     <string name="title_activity_sensors">SensorsActivity</string>
     <string name="title_activity_rooms">RoomsActivity</string>
+    <string name="title_activity_notifications">NotificationsActivity</string>
 </resources>

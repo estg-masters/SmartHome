@@ -7,7 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
+import android.util.Range;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +19,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.estg.masters.pedwm.smarthome.model.notification.BooleanNotification;
+import com.estg.masters.pedwm.smarthome.model.notification.ComparingTypeEnum;
+import com.estg.masters.pedwm.smarthome.model.notification.NumberNotification;
 import com.estg.masters.pedwm.smarthome.model.sensor.NumberSensor;
 import com.estg.masters.pedwm.smarthome.model.sensor.Sensor;
 import com.estg.masters.pedwm.smarthome.repository.NotificationRepository;
@@ -110,37 +114,97 @@ public class SensorViewFactory {
         addNotificationButton.setText("Add notification");
 
         addNotificationButton.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Add notification");
+            if(!(sensor instanceof NumberSensor)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Add notification");
 
-            ArrayList<String> spinnerArray = new ArrayList<>();
-            spinnerArray.add("true");
-            spinnerArray.add("false");
+                ArrayList<String> spinnerArray = new ArrayList<>();
+                spinnerArray.add("true");
+                spinnerArray.add("false");
 
-            Spinner spinner = new Spinner(context);
-            ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(context,
-                    android.R.layout.simple_spinner_dropdown_item, spinnerArray);
-            spinner.setAdapter(spinnerArrayAdapter);
+                Spinner spinner = new Spinner(context);
+                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(context,
+                        android.R.layout.simple_spinner_dropdown_item, spinnerArray);
+                spinner.setAdapter(spinnerArrayAdapter);
 
-            builder.setView(spinner);
-            builder.setPositiveButton("OK", (dialog, which) -> {
-                // todo add option for number notification
-                BooleanNotification notification =
-                        BooleanNotification.Builder.aNotification()
-                                .withNewId()
-                                .withUserId(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                .withSensorId(sensor.getKey())
-                                .withValue(spinner.getSelectedItem().toString().equals("true"))
-                                .build();
-                NotificationRepository.getInstance().save(notification.getKey(), notification);
-            });
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+                builder.setView(spinner);
+                builder.setPositiveButton("OK", (dialog, which) -> {
+                    BooleanNotification notification =
+                            BooleanNotification.Builder.aNotification()
+                                    .withNewId()
+                                    .withUserId(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .withSensorId(sensor.getKey())
+                                    .withValue(spinner.getSelectedItem().toString().equals("true"))
+                                    .build();
+                    NotificationRepository.getInstance().save(notification.getKey(), notification);
+                });
+                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
-            builder.show();
+                builder.show();
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Add notifications for this sensor");
+                LinearLayout linearLayout = new LinearLayout(builder.getContext());
+                LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
+                linearLayout.setLayoutParams(linearLayoutParams);
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+                EditText editText = new EditText(context);
+                editText.setTextSize(textSize);
+                editText.setInputType(sensorValueInputType);
+
+                editText.setLayoutParams(linearLayoutParams);
+
+                ArrayList<String> spinnerArray = new ArrayList<>();
+                spinnerArray.add("<");
+                spinnerArray.add("=");
+                spinnerArray.add(">");
+
+                Spinner spinner = new Spinner(context);
+                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(context,
+                        android.R.layout.simple_spinner_dropdown_item, spinnerArray);
+                spinner.setAdapter(spinnerArrayAdapter);
+
+                linearLayout.addView(editText);
+                linearLayout.addView(spinner);
+
+                builder.setView(linearLayout);
+
+                builder.setPositiveButton("OK", (dialog, which) -> {
+                    NumberNotification notification =
+                            NumberNotification.Builder.aNotification()
+                                    .withNewId()
+                                    .withUserId(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .withSensorId(sensor.getKey())
+                                    .withValue(Integer.parseInt(editText.getText().toString()))
+                                    .withComparingType(getComparingTypeOfNotification(spinner
+                                            .getSelectedItem().toString()))
+                                    .build();
+                    NotificationRepository.getInstance().save(notification.getKey(), notification);
+                });
+                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+                builder.show();
+            }
         });
 
         view.addView(addNotificationButton);
 
         return view;
+    }
+
+    private static ComparingTypeEnum getComparingTypeOfNotification(String comparintType) {
+        switch (comparintType) {
+            case "<":
+                return ComparingTypeEnum.LESSER;
+            case "=":
+                return ComparingTypeEnum.EQUALS;
+            case ">":
+                return ComparingTypeEnum.BIGGER;
+            default:
+                return null;
+        }
     }
 }
