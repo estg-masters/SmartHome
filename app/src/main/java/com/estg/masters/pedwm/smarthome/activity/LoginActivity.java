@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<String> tokens = getUserTokens(dataSnapshot);
-                    if (!tokens.contains(token)) {
+                    if (!Objects.isNull(tokens) && !tokens.contains(token)) {
                         tokens.add(token);
                     }
 
