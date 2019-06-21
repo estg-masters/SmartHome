@@ -254,17 +254,11 @@ public class LoginActivity extends AppCompatActivity
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                handleSignInAccount(account);
-                goToActivityAndFinish(MainActivity.class);
+                firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 Log.w("Login", "Google sign in failed", e);
             }
         }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void handleSignInAccount(GoogleSignInAccount account) {
-        firebaseAuthWithGoogle(account);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -285,6 +279,8 @@ public class LoginActivity extends AppCompatActivity
                                 } else {
                                     addTokenToCurrentUserIfNotExistent();
                                 }
+
+                                goToActivityAndFinish(MainActivity.class);
                             }
 
                             @Override
@@ -292,8 +288,6 @@ public class LoginActivity extends AppCompatActivity
                                 Log.e("ERROR", "Retreiving the user");
                             }
                         });
-
-                        goToActivityAndFinish(MainActivity.class);
                     } else {
                         Log.d("Error", "Auth failed!");
                     }
