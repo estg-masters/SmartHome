@@ -7,9 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
-import android.util.Range;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +31,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class SensorViewFactory {
+
+    private static final String LESSER_THAN = "lesser than";
+    private static final String EQUALS_TO = "equals to";
+    private static final String BIGGER_THAN = "bigger than";
+    private static final String IS_ON = "is on";
+    private static final String IS_OFF = "is off";
 
     public static final int sensorValueInputType = InputType.TYPE_CLASS_NUMBER
             | InputType.TYPE_NUMBER_FLAG_SIGNED;
@@ -81,9 +85,9 @@ public class SensorViewFactory {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             sourceName.setText(" (" +
                                     dataSnapshot
-                                    .child("name")
-                                    .getValue()
-                                    .toString() + ")");
+                                            .child("name")
+                                            .getValue()
+                                            .toString() + ")");
                         }
 
                         @Override
@@ -114,7 +118,7 @@ public class SensorViewFactory {
         addNotificationButton.setText("Add notification");
 
         addNotificationButton.setOnClickListener(v -> {
-            if(!(sensor instanceof NumberSensor)) {
+            if (!(sensor instanceof NumberSensor)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Add notification");
 
@@ -158,31 +162,45 @@ public class SensorViewFactory {
                 editText.setLayoutParams(linearLayoutParams);
 
                 ArrayList<String> spinnerArray = new ArrayList<>();
-                spinnerArray.add("<");
-                spinnerArray.add("=");
-                spinnerArray.add(">");
+                spinnerArray.add(LESSER_THAN);
+                spinnerArray.add(EQUALS_TO);
+                spinnerArray.add(BIGGER_THAN);
+                spinnerArray.add(IS_ON);
+                spinnerArray.add(IS_OFF);
 
                 Spinner spinner = new Spinner(context);
                 ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(context,
                         android.R.layout.simple_spinner_dropdown_item, spinnerArray);
                 spinner.setAdapter(spinnerArrayAdapter);
 
-                linearLayout.addView(editText);
                 linearLayout.addView(spinner);
+                linearLayout.addView(editText);
 
                 builder.setView(linearLayout);
 
                 builder.setPositiveButton("OK", (dialog, which) -> {
-                    NumberNotification notification =
-                            NumberNotification.Builder.aNotification()
-                                    .withNewId()
-                                    .withUserId(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .withSensorId(sensor.getKey())
-                                    .withValue(Integer.parseInt(editText.getText().toString()))
-                                    .withComparingType(getComparingTypeOfNotification(spinner
-                                            .getSelectedItem().toString()))
-                                    .build();
-                    NotificationRepository.getInstance().save(notification.getKey(), notification);
+
+                    if (isBooleanOption(spinner.getSelectedItem().toString())) {
+                        BooleanNotification notification =
+                                BooleanNotification.Builder.aNotification()
+                                        .withNewId()
+                                        .withUserId(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .withSensorId(sensor.getKey())
+                                        .withValue(spinner.getSelectedItem().toString().equals(IS_ON))
+                                        .build();
+                        NotificationRepository.getInstance().save(notification.getKey(), notification);
+                    } else {
+                        NumberNotification notification =
+                                NumberNotification.Builder.aNotification()
+                                        .withNewId()
+                                        .withUserId(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .withSensorId(sensor.getKey())
+                                        .withValue(Integer.parseInt(editText.getText().toString()))
+                                        .withComparingType(getComparingTypeOfNotification(spinner
+                                                .getSelectedItem().toString()))
+                                        .build();
+                        NotificationRepository.getInstance().save(notification.getKey(), notification);
+                    }
                 });
                 builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
@@ -195,16 +213,20 @@ public class SensorViewFactory {
         return view;
     }
 
-    private static ComparingTypeEnum getComparingTypeOfNotification(String comparintType) {
-        switch (comparintType) {
-            case "<":
+    private static ComparingTypeEnum getComparingTypeOfNotification(String comparingType) {
+        switch (comparingType) {
+            case LESSER_THAN:
                 return ComparingTypeEnum.LESSER;
-            case "=":
+            case EQUALS_TO:
                 return ComparingTypeEnum.EQUALS;
-            case ">":
+            case BIGGER_THAN:
                 return ComparingTypeEnum.BIGGER;
             default:
                 return null;
         }
+    }
+
+    private static boolean isBooleanOption(String comparingType) {
+        return getComparingTypeOfNotification(comparingType) != null;
     }
 }
