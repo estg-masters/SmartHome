@@ -4,21 +4,21 @@ import java.util.UUID;
 
 public class NumberNotification extends AbstractNotification {
     private float number;
-    private ComparingTypeEnum comparingTypeEnum;
+    private ComparingTypeEnum comparingType;
 
     public NumberNotification(String id, String userId, String sensorId, float number,
-                              ComparingTypeEnum comparingTypeEnum) {
+                              ComparingTypeEnum comparingType) {
         super(id, NotificationTypeEnum.NUMBER, userId, sensorId);
         this.number = number;
-        this.comparingTypeEnum = comparingTypeEnum;
+        this.comparingType = comparingType;
     }
 
     public float getNumber() {
         return number;
     }
 
-    public ComparingTypeEnum getComparingTypeEnum() {
-        return comparingTypeEnum;
+    public ComparingTypeEnum getComparingType() {
+        return comparingType;
     }
 
     public static class Builder {

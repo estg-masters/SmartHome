@@ -3,8 +3,6 @@ package com.estg.masters.pedwm.smarthome.services;
 import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -12,8 +10,6 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.estg.masters.pedwm.smarthome.R;
-import com.estg.masters.pedwm.smarthome.model.User;
-import com.estg.masters.pedwm.smarthome.model.sensor.Sensor;
 import com.estg.masters.pedwm.smarthome.repository.NotificationRepository;
 import com.estg.masters.pedwm.smarthome.repository.SensorRepository;
 import com.estg.masters.pedwm.smarthome.repository.UserRepository;
@@ -24,9 +20,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +92,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
                                         Log.e("ERROR", "RETREIVING SENSOR");
-
                                     }
                                 }
                         );
@@ -141,7 +133,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     "ON" : "OFF";
                 return "The sensor '" + sensorName + "' is now " + sensorPolarity;
         } else {
-            switch (notificationSnapshot.child("comparingTypeEnum").getValue().toString()) {
+            switch (notificationSnapshot.child("comparingType").getValue().toString()) {
                 case "BIGGER":
                     return "The sensor '" + sensorName + "' has a value bigger than " +
                             notificationSnapshot.child("number").getValue().toString();
