@@ -67,8 +67,8 @@ public class SensorsActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                getSwitch(dataSnapshot)
-                        .setChecked(Boolean.parseBoolean(dataSnapshot.child("on").getValue().toString()));
+                onChildRemoved(dataSnapshot);
+                onChildAdded(dataSnapshot, s);
             }
 
             @Override
