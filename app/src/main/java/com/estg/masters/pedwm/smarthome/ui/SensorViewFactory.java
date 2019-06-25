@@ -115,7 +115,7 @@ public class SensorViewFactory {
         Button addNotificationButton = new Button(context);
         addNotificationButton.setLayoutParams(params);
         addNotificationButton.setId(View.generateViewId());
-        addNotificationButton.setText("Add notification");
+        addNotificationButton.setText("+");
 
         addNotificationButton.setOnClickListener(v -> {
             if (!(sensor instanceof NumberSensor)) {
@@ -227,6 +227,6 @@ public class SensorViewFactory {
     }
 
     private static boolean isBooleanOption(String comparingType) {
-        return getComparingTypeOfNotification(comparingType) != null;
+        return getComparingTypeOfNotification(comparingType) == null;
     }
 }

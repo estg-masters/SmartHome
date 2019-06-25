@@ -35,7 +35,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        if(remoteMessage.getData().get("userKey").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+        if (remoteMessage.getData().get("userKey").equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
             getNotificationData(remoteMessage);
         }
     }
@@ -128,10 +128,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private String buildNotificationContnet(String sensorName, DataSnapshot notificationSnapshot) {
-        if(notificationSnapshot.child("type").getValue().equals("BOOLEAN")) {
-            String sensorPolarity = notificationSnapshot.child("type").getValue().equals("true") ?
-                    "ON" : "OFF";
-                return "The sensor '" + sensorName + "' is now " + sensorPolarity;
+        if (notificationSnapshot.child("type").getValue().equals("BOOLEAN")) {
+            String sensorPolarity =
+                    Boolean.valueOf(notificationSnapshot.child("value").getValue().toString()) ?
+                            "ON" : "OFF";
+            return "The sensor '" + sensorName + "' is now " + sensorPolarity;
         } else {
             switch (notificationSnapshot.child("comparingType").getValue().toString()) {
                 case "BIGGER":
